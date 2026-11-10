@@ -1,34 +1,39 @@
 from sqlalchemy import select
 from conexion import Session
-from modelos import Sala, Reserva
+from modelos import Libro, Usuario, Prestamo
 
-def consultar_salas():
+def listar_libros():
     with Session() as session:
-        consulta = select(Sala)
-        salas = session.scalars(consulta).all()
+        consulta = select(Libro)
+        libros = session.scalars(consulta).all()
 
-        print("Salas disponibles:")
-        if not salas:
-            print("No existen Salas registradas.")
+        print("Libros disponibles:")
+        if not libros:
+            print("no existen libros registrados")
             return
-        for sala in salas:
-            print("id_sala : ", sala.id)
-            print("nombre_sala: ", sala.nombre)
-            print("capacidad : ", sala.capacidad)
-            print("disponible : ", sala.disponible)
+        for libro in libros:
+            print("id_libro : ", libro.id)
+            print("titulo: ", libro.titulo)
+            print("autor : ", libro.autor)
+            print("disponible : ", libro.disponible)
 
-def consultar_reservas():
+def consultar_libros_por_id(id_libro):
     with Session() as session:
-        consulta = select(Reserva)
-        reservas = session.scalars(consulta).all()
+        consultar = select(Libro).where(Libro.id == id_libro)
+        libro = session.scalars(consultar).first()
+        print("libro encontrado:", libro.titulo)
+        print("autor:", libro.autor)
 
-        print("reservas actuales:")
-        if not reservas:
-            print("No existen reservas registradas.")
+def listar_usuarios():
+    with Session() as session:
+        consulta = select(Usuario)
+        usuarios = session.scalars(consulta).all()
+
+        print("total usuarios registrados:")
+        if not usuarios:
+            print("no hay usuarios registrados aun")
             return
-        for reserva in reservas:
-            print("id_reserva : ", reserva.id)
-            print("estudiante : ", reserva.estudiante)
-            print("sala : ", reserva.sala_id)
-            print("fecha : ", reserva.fecha)
-            print("sala:", reserva.sala.nombre)
+        for usuario in usuarios:
+            print("id_usuario : ", usuario.id)
+            print("nombre: ", usuario.nombre)
+            print("correo : ", usuario.correo)

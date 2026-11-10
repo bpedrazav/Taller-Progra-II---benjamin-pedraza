@@ -1,31 +1,40 @@
-from modelos import Sala, Reserva
-from conexion import Session
+from modelos import Libro, Usuario, Prestamo
+from conexion import Session 
 
-def registrar_sala(nombre, capacidad):
-    with Session() as session:
-        if not nombre.strip():
-            print("el nombre de la sala no puede estar vacio")
-            return
-        if capacidad <= 0:
-            print("la capacidad debe ser mayor a 0")
-            return
-        nueva_sala = Sala(nombre=nombre, capacidad=capacidad)
-        session.add(nueva_sala)
-        session.commit()
-        print("sala registrada")
+def registrar_libro(titulo, autor, ejemplares_disponibles):
+    session = Session()
+    libro = Libro(titulo=titulo, autor=autor, ejemplares_disponibles=ejemplares_disponibles)
+    session.add(libro)
+    session.commit()
+    print("libro registrado correctamente")
 
 
-def registrar_reserva(estudiante, sala_id, fecha):
-    with Session() as session:
-        sala = session.get(Sala, sala_id)
-        if not sala:
-            print("la sala no existe")
-            return
-        if not sala.disponible:
-            print("sala no disponible o ocupada")
-            return
-        nueva_reserva = Reserva(estudiante=estudiante, sala=sala, fecha=fecha)
-        sala.disponible = False
-        session.add(nueva_reserva)
-        session.commit()
-        print("reserva lista")
+def registrar_usuario(nombre, correo):
+    session = Session()
+    usuario = Usuario(nombre=nombre, correo=correo)
+    session.add(usuario)
+    session.commit()
+    print("usuario registrado correctamente")
+
+def registrar_prestamo(usuario_id, libro_id, fecha, cantidad):
+    session = Session()
+    usuario = session.get(Usuario, usuario_id)
+    libro = session.get(Libro, libro_id)
+    fecha = session.get(Prestamo, fecha)
+    cantidad = session.get(Prestamo, cantidad)
+
+    if not usuario:
+        print("el usuario no existe")
+        return
+    if not libro:
+        print("el libro no existe")
+        return
+    if libro.ejemplares_disponibles <= 0:
+        print("no hay stock en este libro")
+        return
+    
+    prestamo = Prestamo(usuario=usuario, libro=libro)
+    libro.ejemplares_disponibles -= 1
+    session.add(prestamo)
+    session.commit()
+    print("prestamo realizado")
